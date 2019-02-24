@@ -1,0 +1,19 @@
+{
+  "name": "graphQL_talk",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Peter Czibik <p.czibik@gmail.com> (http://twitter.com/peteyycz)",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server": "2.4.6",
+    "graphql": "14.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "1.18.10"
+  }
+}
