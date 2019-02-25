@@ -5,19 +5,31 @@ const {
   GraphQLString,
   GraphQLList,
   GraphQLEnumType,
-  GraphQLInputObjectType
+  GraphQLInputObjectType,
+  GraphQLID
 } = require("graphql");
 
 const users = [
   {
+    id: "0",
     firstName: "Ferenc",
     lastName: "Frontend",
-    email: "ferenc.frontend@amazingcompany.com"
+    email: "ferenc.frontend@amazingcompany.com",
+    friends: ["1"]
   },
   {
+    id: "1",
     firstName: "Bela",
     lastName: "Backend",
-    email: "bela.backend@amazingcompany.com"
+    email: "bela.backend@amazingcompany.com",
+    friends: ["2"]
+  },
+  {
+    id: "2",
+    firstName: "Peter",
+    lastName: "Czibik",
+    email: "peter.czibik@risingstack.com",
+    friends: []
   }
 ];
 
@@ -48,10 +60,31 @@ const UserFilterType = new GraphQLInputObjectType({
 
 const User = new GraphQLObjectType({
   name: "User",
-  fields: {
+  fields: () => ({
+    id: { type: new GraphQLNonNull(GraphQLID) },
     firstName: { type: new GraphQLNonNull(GraphQLString) },
     lastName: { type: new GraphQLNonNull(GraphQLString) },
-    email: { type: new GraphQLNonNull(GraphQLString) }
+    email: { type: new GraphQLNonNull(GraphQLString) },
+    friends: {
+      type: new GraphQLList(FriendEdge),
+      resolve(source) {
+        return source.friends.map((friendId) => {
+          const user = users.find(({ id: userId }) => userId === friendId);
+          console.log(friendId);
+          console.log("user", user);
+          return {
+            node: user
+          };
+        });
+      }
+    }
+  })
+});
+
+const FriendEdge = new GraphQLObjectType({
+  name: "FriendEdge",
+  fields: {
+    node: { type: User }
   }
 });
 
@@ -105,8 +138,10 @@ const mutationType = new GraphQLObjectType({
         input: { type: UserInputType }
       },
       resolve(_, args) {
-        users.push(args.input);
-        return args.input;
+        const newUser = Object.assign(args.input, { id: users.length.toString(), friends: ["2"] }); // Already a friend of mine <3 :D
+        console.log(newUser);
+        users.push(newUser);
+        return newUser;
       }
     }
   }
